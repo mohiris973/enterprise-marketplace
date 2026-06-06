@@ -1,0 +1,29 @@
+services:
+  nextjs-prod-standalone:
+    build:
+      context: ./frontend-shop
+      dockerfile: Dockerfile
+    image: nextjs-sample:prod
+    container_name: nextjs-sample-prod
+    ports:
+      - "3000:3000"
+
+  nextjs-dev:
+    build:
+      context: ./frontend-shop
+      dockerfile: Dockerfile.dev
+    container_name: nextjs-sample-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - WATCHPACK_POLLING=true
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend-shop
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: rebuild
+          path: ./frontend-shop/package.json

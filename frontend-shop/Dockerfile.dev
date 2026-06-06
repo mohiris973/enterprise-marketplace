@@ -1,0 +1,25 @@
+ARG NODE_VERSION=24.14.0-slim
+FROM node:${NODE_VERSION}
+
+WORKDIR /app
+
+# Installation globale de pnpm
+RUN npm install -g pnpm@latest
+
+COPY package.json pnpm-lock.yaml* ./
+
+ENV CI=true
+
+# ÉTAPE CORRIGÉE : On passe confirmModulesPurge=false pour éviter le plantage TTY
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --dangerously-allow-all-builds
+
+COPY . .
+
+ENV NODE_ENV=development
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+EXPOSE 3000
+
+CMD ["pnpm", "dev"]
